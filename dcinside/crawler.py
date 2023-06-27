@@ -17,7 +17,7 @@ class Crawler:
         self.driver = webdriver.Chrome(options=options)
         self.driver.set_page_load_timeout(timeout)
 
-    def crawl(self, gallery, idx):
+    def crawl(self, gallery, idx, collect_comment=False):
         while True:
             try:
                 self.driver.get(f"https://gall.dcinside.com/board/view/?id={gallery}&no={idx}")
@@ -29,30 +29,37 @@ class Crawler:
                 else:
                     raise DeletedPostException
 
-                comments = []
-                try:
-                    n_comments = self.driver.find_element(By.CLASS_NAME, "cmt_paging")
-                    n_comments = n_comments.find_elements(By.TAG_NAME, "a")
-                    last_comment_page = len(n_comments) + 1
-                except NoSuchElementException:
-                    last_comment_page = 0
+                if collect_comment:
+                    comments = []
+                    try:
+                        n_comments = self.driver.find_element(By.CLASS_NAME, "cmt_paging")
+                        n_comments = n_comments.find_elements(By.TAG_NAME, "a")
+                        last_comment_page = len(n_comments) + 1
+                    except NoSuchElementException:
+                        last_comment_page = 0
+
+                    for i in range(last_comment_page, 0, -1):
+                        self.driver.execute_script(f"viewComments({i}, 'D')")
+                        page_comments = self.driver.find_elements(By.CLASS_NAME, "usertxt")
+                        for comment in page_comments:
+                            comments.append(comment.text)
 
                 title = self.driver.find_element(By.CLASS_NAME, "title_subject")
                 content = self.driver.find_element(By.CLASS_NAME, "writing_view_box")
                 content = content.find_elements(By.TAG_NAME, "div")
                 content = content[-1]
 
-                for i in range(last_comment_page, 0, -1):
-                    self.driver.execute_script(f"viewComments({i}, 'D')")
-                    page_comments = self.driver.find_elements(By.CLASS_NAME, "usertxt")
-                    for comment in page_comments:
-                        comments.append(comment.text)
-
-                return {
-                    "title": title.text,
-                    "content": content.text,
-                    "comments": comments
-                }
+                if collect_comment:
+                    return {
+                        "title": title.text,
+                        "content": content.text,
+                        "comments": comments
+                    }
+                else:
+                    return {
+                        "title": title.text,
+                        "content": content.text
+                    }
 
             except DeletedPostException:
                 raise DeletedPostException
