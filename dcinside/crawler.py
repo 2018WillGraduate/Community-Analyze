@@ -45,9 +45,9 @@ class Crawler:
                             comments.append(comment.text)
 
                 title = self.driver.find_element(By.CLASS_NAME, "title_subject")
-                content = self.driver.find_element(By.CLASS_NAME, "writing_view_box")
-                content = content.find_elements(By.TAG_NAME, "div")
-                content = content[-1]
+                content = self.driver.find_element(By.CLASS_NAME, "write_div")
+                # content = content.find_elements(By.TAG_NAME, "div")
+                # content = content[-1]
 
                 if collect_comment:
                     return {
