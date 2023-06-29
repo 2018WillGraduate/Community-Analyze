@@ -29,6 +29,13 @@ class Crawler:
                 else:
                     raise DeletedPostException
 
+                try:
+                    self.driver.find_element(By.CLASS_NAME, "adult_img")
+                except NoSuchElementException:
+                    pass
+                else:
+                    raise AdultException
+
                 if collect_comment:
                     comments = []
                     try:
