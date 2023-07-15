@@ -9,7 +9,7 @@ def create_directory(path):
     except FileExistsError:
         print(f"Directory '{path}' already exists.")
 
-gallery = "tree"
+gallery = "programming"
 
 COLLECT_COMMENT = False
 
@@ -17,7 +17,7 @@ create_directory(gallery)
 
 
 crawler = Crawler()
-for i in range(1, 11):
+for i in range(2519214, 2520340):
     try:
         res = crawler.crawl(gallery, str(i), COLLECT_COMMENT)
         
