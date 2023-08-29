@@ -29,6 +29,11 @@ for i in range(2519214, 2520340):
             f.write(json.dumps(res, ensure_ascii=False, indent=4))
     except Exception as e:
         print(e)
+        if str(e) in exc:
+            exc[str(e)].append(i)
+        else:
+            exc[str(e)] = [i]
+print(exc)
 
 
 # def create_directory(path):
